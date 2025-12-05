@@ -23,7 +23,6 @@ async def get_stars(search: Optional[str] = None):
     
     return [StarResponse(
         id=str(star["_id"]),
-        user_id="",  # 不再需要 user_id
         name=star["name"],
         created_at=star["created_at"]
     ) for star in stars]
@@ -53,7 +52,6 @@ async def create_star(star_data: StarCreate):
     
     return StarResponse(
         id=star_dict["id"],
-        user_id="",
         name=star_dict["name"],
         created_at=star_dict["created_at"]
     )
@@ -73,7 +71,6 @@ async def get_star(star_id: str):
     
     return StarResponse(
         id=str(star["_id"]),
-        user_id="",
         name=star["name"],
         created_at=star["created_at"]
     )
@@ -112,7 +109,6 @@ async def update_star(star_id: str, star_data: StarUpdate):
     
     return StarResponse(
         id=str(updated_star["_id"]),
-        user_id="",
         name=updated_star["name"],
         created_at=updated_star["created_at"]
     )

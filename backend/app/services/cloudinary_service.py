@@ -2,7 +2,6 @@ import cloudinary
 import cloudinary.uploader
 from app.config import settings
 import uuid
-from typing import Optional
 
 class CloudinaryService:
     def __init__(self):

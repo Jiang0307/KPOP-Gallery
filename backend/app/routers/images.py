@@ -88,7 +88,6 @@ async def upload_images(
         
         uploaded_images.append(ImageResponse(
             id=image_dict["id"],
-            user_id="",
             star_id=star_id,
             s3_url=image_url,
             filename=file.filename,
@@ -126,7 +125,6 @@ async def get_star_images(
     
     return [ImageResponse(
         id=str(img["_id"]),
-        user_id="",
         star_id=str(img["star_id"]),
         s3_url=img["s3_url"],
         filename=img["filename"],
@@ -172,7 +170,6 @@ async def get_image(image_id: str):
     
     return ImageResponse(
         id=str(image["_id"]),
-        user_id="",
         star_id=str(image["star_id"]),
         s3_url=image["s3_url"],
         filename=image["filename"],

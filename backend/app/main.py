@@ -18,15 +18,10 @@ async def shutdown_event():
     # 關閉時斷開連接
     await close_mongo_connection()
 
-# CORS 設定
+# CORS 設定 - 允許所有來源（與 MERN-Todo-List 專案相同）
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # 前端開發伺服器（Vite 配置的端口）
-        "http://localhost:5173",   # Vite 默認端口
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=["*"],  # 允許所有來源
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
