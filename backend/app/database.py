@@ -8,8 +8,20 @@ database = Database()
 
 async def connect_to_mongo():
     """連接 MongoDB"""
-    database.client = AsyncIOMotorClient(settings.mongodb_uri)
-    print(f"✅ 已連接到 MongoDB: {settings.mongodb_uri}")
+    # Motor 會自動處理 mongodb+srv:// 的 SSL/TLS
+    # 但我們需要確保連接字串格式正確
+    uri = settings.mongodb_uri
+    
+    # 對於 mongodb+srv://，Motor 會自動使用 TLS
+    # 如果連接字串中沒有 retryWrites，添加它以確保穩定性
+    if uri.startswith("mongodb+srv://") and "retryWrites" not in uri:
+        separator = "&" if "?" in uri else "?"
+        uri = f"{uri}{separator}retryWrites=true&w=majority"
+    
+    database.client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
+    # 測試連接
+    await database.client.admin.command('ping')
+    print(f"✅ 已連接到 MongoDB")
 
 async def close_mongo_connection():
     """關閉 MongoDB 連接"""
