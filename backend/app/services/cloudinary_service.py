@@ -2,6 +2,7 @@ import cloudinary
 import cloudinary.uploader
 from app.config import settings
 import uuid
+import asyncio
 
 class CloudinaryService:
     def __init__(self):
@@ -27,8 +28,11 @@ class CloudinaryService:
         public_id = f"kpop_gallery/stars/{star_id}/{unique_id}_{safe_name}"
         return public_id
     
-    async def upload_file(self, file_content: bytes, public_id: str, content_type: str) -> str:
-        """上傳檔案到 Cloudinary"""
+    def _upload_file_sync(self, file_content: bytes, public_id: str, content_type: str) -> str:
+        """
+        同步上傳檔案到 Cloudinary（內部方法）
+        這個方法會在執行緒池中執行，不會阻塞事件循環
+        """
         if not self.configured:
             raise Exception("Cloudinary 未配置，請設定環境變數")
         
@@ -37,7 +41,7 @@ class CloudinaryService:
             import io
             file_obj = io.BytesIO(file_content)
             
-            # 上傳到 Cloudinary（使用 file 參數）
+            # 上傳到 Cloudinary（同步操作）
             result = cloudinary.uploader.upload(
                 file_obj,
                 public_id=public_id,
@@ -51,6 +55,22 @@ class CloudinaryService:
         except Exception as e:
             raise Exception(f"上傳檔案到 Cloudinary 失敗: {str(e)}")
     
+    async def upload_file(self, file_content: bytes, public_id: str, content_type: str) -> str:
+        """
+        非同步上傳檔案到 Cloudinary
+        
+        使用 asyncio.to_thread() 將同步的 Cloudinary 上傳放到執行緒池中執行
+        這樣可以讓多個上傳任務真正並發執行
+        """
+        # 將同步的 Cloudinary 上傳放到執行緒池中執行
+        # 這樣不會阻塞事件循環，多個上傳可以真正並發
+        return await asyncio.to_thread(
+            self._upload_file_sync,
+            file_content,
+            public_id,
+            content_type
+        )
+    
     async def delete_file(self, public_id: str) -> bool:
         """從 Cloudinary 刪除檔案"""
         if not self.configured:
@@ -58,9 +78,12 @@ class CloudinaryService:
             return False
         
         try:
-            # 從 public_id 中提取實際的 public_id（移除資料夾前綴）
-            result = cloudinary.uploader.destroy(public_id, resource_type="image")
-            return result.get("result") == "ok"
+            # 將同步的刪除操作放到執行緒池中執行
+            def _delete_sync():
+                result = cloudinary.uploader.destroy(public_id, resource_type="image")
+                return result.get("result") == "ok"
+            
+            return await asyncio.to_thread(_delete_sync)
         except Exception as e:
             print(f"刪除 Cloudinary 檔案失敗: {str(e)}")
             return False
