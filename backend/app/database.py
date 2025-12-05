@@ -46,14 +46,9 @@ def get_database():
             db_name = parts[-1]
         else:
             # 如果沒有指定資料庫名稱，使用預設值
-            db_name = "kpop_gallery"
+            db_name = "KPOP-Gallery"
     except Exception:
         # 如果解析失敗，使用預設值
-        db_name = "kpop_gallery"
+        db_name = "KPOP-Gallery"
     
     return database.client[db_name]
-
-
-
-
-

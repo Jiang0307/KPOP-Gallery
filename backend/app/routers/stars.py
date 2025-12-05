@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List, Optional
+import asyncio
 from app.database import get_database
 from app.models.star import StarCreate, StarUpdate, StarResponse
+from app.services.cloudinary_service import cloudinary_service
 from bson import ObjectId
 from datetime import datetime
 
@@ -113,9 +115,28 @@ async def update_star(star_id: str, star_data: StarUpdate):
         created_at=updated_star["created_at"]
     )
 
+async def delete_single_image(s3_key: str):
+    """
+    刪除單個圖片（並發處理用）
+    
+    這個函數會被並發執行，所以每個圖片的刪除不會互相阻塞
+    """
+    await cloudinary_service.delete_file(s3_key)
+
 @router.delete("/{star_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_star(star_id: str):
-    """刪除明星（同時刪除該明星的所有圖片）"""
+    """
+    刪除明星（同時刪除該明星的所有圖片）
+    
+    改進說明：
+    - 原本：使用 for loop 順序處理，一個圖片刪除完才刪除下一個
+    - 現在：使用 asyncio.gather 並發處理，多個圖片同時刪除
+    
+    效能提升：
+    - 假設刪除 10 張圖片，每張需要 1 秒
+    - 原本：1 + 1 + 1 + ... = 10 秒
+    - 現在：約 1 秒（最慢的那個圖片的時間）
+    """
     db = get_database()
     
     # 驗證明星是否存在
@@ -129,10 +150,12 @@ async def delete_star(star_id: str):
     # 取得該明星的所有圖片
     images = await db.images.find({"star_id": ObjectId(star_id)}).to_list(length=10000)
     
-    # 從 Cloudinary 刪除所有圖片
-    from app.services.cloudinary_service import cloudinary_service
-    for image in images:
-        await cloudinary_service.delete_file(image["s3_key"])
+    # 從 Cloudinary 刪除所有圖片（並發刪除）
+    delete_tasks = [
+        delete_single_image(image["s3_key"])
+        for image in images
+    ]
+    await asyncio.gather(*delete_tasks)
     
     # 從 MongoDB 刪除所有圖片記錄
     await db.images.delete_many({"star_id": ObjectId(star_id)})
