@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+motor
+pymongo
+python-jose[cryptography]
+python-multipart
+cloudinary
+pydantic
+pydantic-settings
+python-dotenv
