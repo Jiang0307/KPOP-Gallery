@@ -1,4 +1,4 @@
-from pydantic import BaseSettings  # 從 pydantic 導入，不是 pydantic_settings
+from pydantic_settings import BaseSettings
 from typing import Optional
 
 class Settings(BaseSettings):
