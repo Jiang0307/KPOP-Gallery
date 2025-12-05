@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { starsService } from '../services/stars';
 import { imagesService } from '../services/images';
@@ -38,7 +38,7 @@ export const StarGallery = () => {
   }, [starId]);
 
   // 載入圖片
-  const loadImages = async (pageNum, append = false) => {
+  const loadImages = useCallback(async (pageNum, append = false) => {
     if (!starId) return;
 
     try {
@@ -64,13 +64,13 @@ export const StarGallery = () => {
       setLoading(false);
       setLoadingMore(false);
     }
-  };
+  }, [starId, limit]);
 
   useEffect(() => {
     if (starId) {
       loadImages(1, false);
     }
-  }, [starId]);
+  }, [starId, loadImages]);
 
   // 載入更多圖片
   const handleLoadMore = () => {
