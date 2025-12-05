@@ -20,18 +20,24 @@ async def close_mongo_connection():
 def get_database():
     """取得資料庫實例（從連接字串中提取資料庫名稱）"""
     # 從連接字串中提取資料庫名稱
-    # 格式：mongodb://host:port/db_name 或 mongodb+srv://host/db_name
+    # 格式：mongodb://host:port/db_name 或 mongodb+srv://host/db_name?options
     uri = settings.mongodb_uri
-    db_name = "kpop_gallery"  # 預設值
     
-    # 嘗試從 URI 中提取資料庫名稱
-    if "/" in uri:
-        # 分割 URI，取得最後一部分（在最後一個 / 之後）
-        parts = uri.split("/")
-        if len(parts) > 3:  # mongodb+srv://user:pass@host/db_name 或 mongodb://host:port/db_name
-            potential_db = parts[-1].split("?")[0]  # 移除查詢參數
-            if potential_db and potential_db.strip():  # 確保不是空字串
-                db_name = potential_db
+    # 解析 URI 以提取資料庫名稱
+    try:
+        # 移除查詢參數
+        uri_without_query = uri.split("?")[0]
+        # 分割 URI，取得最後一部分
+        parts = uri_without_query.split("/")
+        # 如果最後一部分是資料庫名稱（不是空字串且不是主機名）
+        if len(parts) > 3 and parts[-1]:
+            db_name = parts[-1]
+        else:
+            # 如果沒有指定資料庫名稱，使用預設值
+            db_name = "kpop_gallery"
+    except Exception:
+        # 如果解析失敗，使用預設值
+        db_name = "kpop_gallery"
     
     return database.client[db_name]
 
