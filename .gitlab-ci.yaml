@@ -23,7 +23,6 @@ frontend:test:
   artifacts:
     paths:
       - frontend/build/
-    expire_in: 1 hour
   only:
     - main
     - develop
@@ -138,7 +137,8 @@ backend:deploy:railway:
   image: ghcr.io/railwayapp/cli:latest
   script:
     - cd backend
-    - railway up --service "$RAILWAY_SERVICE_ID" --token "$RAILWAY_TOKEN"
+    - RAILWAY_TOKEN="$RAILWAY_TOKEN"
+    - railway up --service "$RAILWAY_SERVICE_ID"
   environment:
     name: production
     url: $RAILWAY_BACKEND_URL
