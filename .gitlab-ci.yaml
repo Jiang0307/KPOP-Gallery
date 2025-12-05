@@ -1,4 +1,4 @@
-# GitLab CI/CD 配置 - Star Gallery 專案
+# GitLab CI/CD 配置 - KPOP-Gallery 專案
 stages:
   - test
   - build

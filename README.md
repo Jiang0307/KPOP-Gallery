@@ -1,4 +1,4 @@
-# Star Gallery - 明星圖片收藏系統
+# KPOP-Gallery - 明星圖片收藏系統
 
 一個全端明星圖片收藏系統，使用 React + FastAPI + MongoDB + Cloudinary。
 
@@ -14,7 +14,7 @@
 ## 專案結構
 
 ```
-Star-Gallery/
+KPOP-Gallery/
 ├── frontend/          # React 前端應用
 ├── backend/           # FastAPI 後端應用
 ├── docker-compose.yml # 本地開發環境

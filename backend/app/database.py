@@ -25,7 +25,7 @@ def get_database():
     if "/" in uri:
         db_name = uri.split("/")[-1].split("?")[0]  # 移除查詢參數
     else:
-        db_name = "star_gallery"  # 預設值
+        db_name = "kpop_gallery"  # 預設值
     return database.client[db_name]
 
 

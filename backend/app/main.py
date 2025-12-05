@@ -4,7 +4,7 @@ from app.database import connect_to_mongo, close_mongo_connection
 from app.routers import images, stars
 
 app = FastAPI(
-    title="Star Gallery API",
+    title="KPOP Gallery API",
     version="1.0.0"
 )
 
@@ -33,7 +33,7 @@ app.include_router(images.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Star Gallery API"}
+    return {"message": "KPOP Gallery API"}
 
 @app.get("/api/health")
 async def health_check():

@@ -19,12 +19,12 @@ class CloudinaryService:
     
     def generate_public_id(self, star_id: str, filename: str) -> str:
         """生成 Cloudinary public_id（路徑）"""
-        # 格式：star_gallery/stars/{star_id}/{uuid}
+        # 格式：kpop_gallery/stars/{star_id}/{uuid}
         unique_id = str(uuid.uuid4())
         # 移除檔案副檔名，Cloudinary 會自動處理
         name_without_ext = filename.rsplit('.', 1)[0] if '.' in filename else filename
         safe_name = name_without_ext.replace(' ', '_').replace('/', '_')
-        public_id = f"star_gallery/stars/{star_id}/{unique_id}_{safe_name}"
+        public_id = f"kpop_gallery/stars/{star_id}/{unique_id}_{safe_name}"
         return public_id
     
     async def upload_file(self, file_content: bytes, public_id: str, content_type: str) -> str:
