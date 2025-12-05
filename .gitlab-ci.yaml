@@ -124,7 +124,7 @@ frontend:deploy:vercel:
     - npm install -g vercel
   script:
     - cd frontend
-    - vercel --prod --yes --token "$VERCEL_TOKEN"
+    - vercel --prod --yes --token "$VERCEL_TOKEN" --name kpop-gallery
   only:
     - main
   when: on_success
