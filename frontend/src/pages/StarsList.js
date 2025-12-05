@@ -27,7 +27,7 @@ export const StarsList = () => {
         setError(err.response?.data?.detail || `載入失敗: ${err.response.status}`);
       } else if (err.request) {
         // 請求已發送但沒有回應
-        setError('無法連接到後端服務器，請確認後端是否在運行 (http://localhost:8000)');
+        setError('無法連接到後端服務器，請確認後端是否在運行');
       } else {
         // 其他錯誤
         setError(err.message || '載入失敗');
